@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	
+	
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="612f1852-c8e6-4cb7-a615-9893a7f05560" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="flow1">
+  <http:listener doc:name="Listener" config-ref="HTTP_Listener_config"
+    path="/source"/>
+  <ee:transform doc:name="Transform Message" doc:id="57dc6f2d-b707-4b17-81ac-ca0b8877e8e0">
+    <ee:message >
+      <ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+Mule::lookup('flow2', {test:'hello '})]]></ee:set-payload>
+    </ee:message>
+  </ee:transform>
+</flow>
+<flow name="flow2" >
+  <set-payload value='#[payload.test ++ "world"]' doc:name="Set Payload" />
+  <logger level="INFO" doc:name="Logger" message='#[payload]'/>
+</flow>
+	
+	
+	</mule>
